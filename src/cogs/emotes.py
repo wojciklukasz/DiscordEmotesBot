@@ -1,7 +1,7 @@
 import re
 import discord
 from discord.ext import commands
-from discord.ext.commands.errors import EmojiNotFound
+from database.model import increase_count, get_count
 
 
 class Emotes(commands.Cog):
@@ -15,10 +15,38 @@ class Emotes(commands.Cog):
         """Returns how many times a given emote has been used"""
 
         is_emote = True if len(re.findall(r'<:\w*:\d*>', emote)) > 0 else False
-        if is_emote:
-            await ctx.respond(emote)
+        if not is_emote:
+            embed = discord.Embed(
+                title='Error!',
+                description='**This is not a valid emote!**',
+                color=discord.Colour.red()
+            )
+
+            await ctx.respond(embed=embed)
+            return
+
+        embed = discord.Embed(
+            title=f'Usage of {emote}',
+            color=discord.Colour.blurple(),
+        )
+
+        count = get_count(emote, ctx.guild)
+        if count == 0:
+            embed.add_field(name='This emote has not been used yet!', value='*sad emote noises*')
         else:
-            await ctx.respond('This is not a valid emote!')
+            embed.add_field(name='As an emote:', value=count)
+        embed.set_thumbnail(url=f'https://cdn.discordapp.com/emojis/{emote.split(":")[2][:-1]}.png')
+
+        await ctx.respond(embed=embed)
+
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        if message.author == self.bot.user:
+            return
+        emotes = re.findall(r'<:\w*:\d*>', message.content)
+
+        for e in emotes:
+            increase_count(e, message.guild)
 
 
 def setup(bot):
