@@ -15,10 +15,18 @@ class Emotes(commands.Cog):
         """Returns how many times a given emote has been used"""
 
         is_emote = True if len(re.findall(r'<:\w*:\d*>', emote)) > 0 else False
-        if is_emote:
-            await ctx.respond(emote)
-        else:
+        if not is_emote:
             await ctx.respond('This is not a valid emote!')
+            return
+
+        embed = discord.Embed(
+            title=f'Usage of {emote}',
+            color=discord.Colour.blurple(),
+        )
+        embed.add_field(name='As an emote:', value='2')
+        embed.set_thumbnail(url=f'https://cdn.discordapp.com/emojis/{emote.split(":")[2][:-1]}.png')
+
+        await ctx.respond(embed=embed)
 
 
 def setup(bot):
