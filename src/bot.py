@@ -1,11 +1,16 @@
 import os
 import discord
 from dotenv import load_dotenv
-from cogs.emotes import Emotes
+from database.model import connect
 
 
+db = connect()
 load_dotenv()
-bot = discord.Bot()
+
+intents = discord.Intents.default()
+intents.message_content = True
+
+bot = discord.Bot(intents=intents)
 bot.load_extension('cogs.emotes')
 
 
@@ -13,11 +18,5 @@ bot.load_extension('cogs.emotes')
 async def on_ready():
     print(f'Logged in as {bot.user} (ID: {bot.user.id})')
     print('-------------------------------------------------------------')
-
-
-@bot.slash_command(name='add')
-async def add(ctx, x: int, y: int):
-    """Adds two numbers together"""
-    await ctx.respond(x + y)
 
 bot.run(os.getenv('TOKEN'))
