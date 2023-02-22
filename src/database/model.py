@@ -66,6 +66,35 @@ def get_count_reaction(emote, server):
     return e.uses_reaction
 
 
+@orm.db_session
+def delete_emote(emote, server):
+    e = Emote.get(name=emote, guild_id=str(server.id))
+    e.delete()
+    print(f'Deleted {emote} from server {server} ID: {server.id}')
+
+
+@orm.db_session
+def decrease_count_emote(emote, server):
+    e = Emote.get(name=emote, guild_id=str(server.id))
+
+    print(f'Decreasing uses as emote of {emote} in server {server} ID: {server.id}')
+    e.uses_emote -= 1
+
+    if e.used_emote == 0 and e.uses_reaction == 0:
+        delete_emote(emote, server)
+
+
+@orm.db_session
+def decrease_count_reaction(emote, server):
+    e = Emote.get(name=emote, guild_id=str(server.id))
+
+    print(f'Decreasing uses as emote of {emote} in server {server} ID: {server.id}')
+    e.uses_reaction -= 1
+
+    if e.used_emote == 0 and e.uses_reaction == 0:
+        delete_emote(emote, server)
+
+
 def connect():
     db.bind(provider='sqlite', filename='db.sqlite', create_db=True)
     db.generate_mapping(create_tables=True)
