@@ -1,7 +1,12 @@
 import re
 import discord
 from discord.ext import commands
-from database.model import increase_count_emote, increase_count_reaction, get_count_emote, get_count_reaction
+from database.model import increase_count_emote, increase_count_reaction, get_count_emote, get_count_reaction, \
+    decrease_count_emote, decrease_count_reaction
+
+
+emote_regex = r'<:\w*:\d*>'
+animated_emote_regex = r'<a:\w*:\d*>'
 
 
 class Emotes(commands.Cog):
@@ -14,7 +19,7 @@ class Emotes(commands.Cog):
     async def usage(self, ctx, emote):
         """Returns how many times a given emote has been used"""
 
-        is_emote = True if len(re.findall(r'<:\w*:\d*>', emote)) > 0 else False
+        is_emote = True if len(re.findall(emote_regex, emote)) > 0 else False
         if not is_emote:
             embed = discord.Embed(
                 title='Error!',
@@ -50,8 +55,8 @@ class Emotes(commands.Cog):
         if message.author == self.bot.user:
             return
 
-        emotes = re.findall(r'<:\w*:\d*>', message.content)
-        animated_emotes = re.findall(r'<a:\w*:\d*>', message.content)
+        emotes = re.findall(emote_regex, message.content)
+        animated_emotes = re.findall(animated_emote_regex, message.content)
 
         for e in emotes:
             increase_count_emote(e, message.guild)
@@ -64,6 +69,21 @@ class Emotes(commands.Cog):
             return
 
         increase_count_reaction(str(reaction.emoji), reaction.member.guild)
+
+    @commands.Cog.listener()
+    async def on_message_delete(self, message):
+        emotes = re.findall(emote_regex, message.content)
+        animated_emotes = re.findall(animated_emote_regex, message.content)
+
+        for e in emotes:
+            decrease_count_emote(e, message.guild)
+        for e in animated_emotes:
+            decrease_count_emote(e, message.guild)
+
+    @commands.Cog.listener()
+    async def on_raw_reaction_remove(self, reaction):
+        guild = await self.bot.fetch_guild(reaction.guild_id)
+        decrease_count_reaction(str(reaction.emoji), guild)
 
 
 def setup(bot):
