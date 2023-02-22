@@ -1,7 +1,7 @@
 import re
 import discord
 from discord.ext import commands
-from database.model import increase_count, get_count_emote
+from database.model import increase_count_emote, get_count_emote
 
 
 class Emotes(commands.Cog):
@@ -46,7 +46,7 @@ class Emotes(commands.Cog):
         emotes = re.findall(r'<:\w*:\d*>', message.content)
 
         for e in emotes:
-            increase_count(e, message.guild)
+            increase_count_emote(e, message.guild)
 
 
 def setup(bot):

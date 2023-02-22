@@ -20,7 +20,14 @@ def add_new_from_emote(emote, server):
 
 
 @orm.db_session
-def increase_count(emote, server):
+def add_new_from_reaction(emote, server):
+    print(f'Adding new emote: {emote} in server {server} ID: {server.id}')
+    e = Emote(name=emote, guild_id=str(server.id), uses_emote=0, uses_reaction=1, last_used=datetime.now())
+    return e
+
+
+@orm.db_session
+def increase_count_emote(emote, server):
     e = Emote.get(name=emote, guild_id=str(server.id))
     if e is None:
         add_new_from_emote(emote, server)
@@ -31,12 +38,32 @@ def increase_count(emote, server):
 
 
 @orm.db_session
+def increase_count_reaction(emote, server):
+    e = Emote.get(name=emote, guild_id=str(server.id))
+    if e is None:
+        add_new_from_reaction(emote, server)
+        return
+
+    print(f'Increasing uses of {emote}')
+    e.uses_reaction += 1
+
+
+@orm.db_session
 def get_count_emote(emote, server):
     e = Emote.get(name=emote, guild_id=str(server.id))
     if e is None:
         return 0
 
     return e.uses_emote
+
+
+@orm.db_session
+def get_count_reaction(emote, server):
+    e = Emote.get(name=emote, guild_id=str(server.id))
+    if e is None:
+        return 0
+
+    return e.uses_reaction
 
 
 def connect():
