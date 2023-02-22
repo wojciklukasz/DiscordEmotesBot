@@ -1,7 +1,7 @@
 import re
 import discord
 from discord.ext import commands
-from database.model import increase_count_emote, get_count_emote, get_count_reaction
+from database.model import increase_count_emote, increase_count_reaction, get_count_emote, get_count_reaction
 
 
 class Emotes(commands.Cog):
@@ -57,6 +57,13 @@ class Emotes(commands.Cog):
             increase_count_emote(e, message.guild)
         for e in animated_emotes:
             increase_count_emote(e, message.guild)
+
+    @commands.Cog.listener()
+    async def on_raw_reaction_add(self, reaction):
+        if reaction.member == self.bot.user:
+            return
+
+        increase_count_reaction(str(reaction.emoji), reaction.member.guild)
 
 
 def setup(bot):

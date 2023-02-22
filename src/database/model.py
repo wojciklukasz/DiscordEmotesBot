@@ -33,7 +33,7 @@ def increase_count_emote(emote, server):
         add_new_from_emote(emote, server)
         return
 
-    print(f'Increasing uses of {emote} in server {server} ID: {server.id}')
+    print(f'Increasing uses as emote of {emote} in server {server} ID: {server.id}')
     e.uses_emote += 1
 
 
@@ -44,7 +44,7 @@ def increase_count_reaction(emote, server):
         add_new_from_reaction(emote, server)
         return
 
-    print(f'Increasing uses of {emote} in server {server} ID: {server.id}')
+    print(f'Increasing uses as reaction of {emote} in server {server} ID: {server.id}')
     e.uses_reaction += 1
 
 
