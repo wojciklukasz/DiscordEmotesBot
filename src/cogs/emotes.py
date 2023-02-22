@@ -1,7 +1,7 @@
 import re
 import discord
 from discord.ext import commands
-from database.model import increase_count, get_count
+from database.model import increase_count, get_count_emote
 
 
 class Emotes(commands.Cog):
@@ -30,7 +30,7 @@ class Emotes(commands.Cog):
             color=discord.Colour.blurple(),
         )
 
-        count = get_count(emote, ctx.guild)
+        count = get_count_emote(emote, ctx.guild)
         if count == 0:
             embed.add_field(name='This emote has not been used yet!', value='*sad emote noises*')
         else:
