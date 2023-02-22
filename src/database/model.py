@@ -33,7 +33,7 @@ def increase_count_emote(emote, server):
         add_new_from_emote(emote, server)
         return
 
-    print(f'Increasing uses of {emote}')
+    print(f'Increasing uses of {emote} in server {server} ID: {server.id}')
     e.uses_emote += 1
 
 
@@ -44,7 +44,7 @@ def increase_count_reaction(emote, server):
         add_new_from_reaction(emote, server)
         return
 
-    print(f'Increasing uses of {emote}')
+    print(f'Increasing uses of {emote} in server {server} ID: {server.id}')
     e.uses_reaction += 1
 
 
@@ -69,4 +69,3 @@ def get_count_reaction(emote, server):
 def connect():
     db.bind(provider='sqlite', filename='db.sqlite', create_db=True)
     db.generate_mapping(create_tables=True)
-

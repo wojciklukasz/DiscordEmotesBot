@@ -1,7 +1,7 @@
 import re
 import discord
 from discord.ext import commands
-from database.model import increase_count_emote, get_count_emote
+from database.model import increase_count_emote, get_count_emote, get_count_reaction
 
 
 class Emotes(commands.Cog):
@@ -25,16 +25,22 @@ class Emotes(commands.Cog):
             await ctx.respond(embed=embed)
             return
 
+        print(f'Getting uses of {emote} in server {ctx.guild} ID: {ctx.guild.id}')
+
         embed = discord.Embed(
             title=f'Usage of {emote}',
             color=discord.Colour.blurple(),
         )
 
-        count = get_count_emote(emote, ctx.guild)
-        if count == 0:
+        count_emote = get_count_emote(emote, ctx.guild)
+        count_reaction = get_count_reaction(emote, ctx.guild)
+
+        if count_emote == 0 and count_reaction == 0:
             embed.add_field(name='This emote has not been used yet!', value='*sad emote noises*')
         else:
-            embed.add_field(name='As an emote:', value=count)
+            embed.add_field(name='As an emote:', value=count_emote)
+            embed.add_field(name='As a reaction:', value=count_reaction)
+
         embed.set_thumbnail(url=f'https://cdn.discordapp.com/emojis/{emote.split(":")[2][:-1]}.png')
 
         await ctx.respond(embed=embed)
