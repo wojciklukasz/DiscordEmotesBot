@@ -1,7 +1,7 @@
 import re
 import discord
 from discord.ext import commands
-from database.model import increase_count, get_count
+from database.model import increase_count_emote, increase_count_reaction, get_count_emote, get_count_reaction
 
 
 class Emotes(commands.Cog):
@@ -25,16 +25,22 @@ class Emotes(commands.Cog):
             await ctx.respond(embed=embed)
             return
 
+        print(f'Getting uses of {emote} in server {ctx.guild} ID: {ctx.guild.id}')
+
         embed = discord.Embed(
             title=f'Usage of {emote}',
             color=discord.Colour.blurple(),
         )
 
-        count = get_count(emote, ctx.guild)
-        if count == 0:
+        count_emote = get_count_emote(emote, ctx.guild)
+        count_reaction = get_count_reaction(emote, ctx.guild)
+
+        if count_emote == 0 and count_reaction == 0:
             embed.add_field(name='This emote has not been used yet!', value='*sad emote noises*')
         else:
-            embed.add_field(name='As an emote:', value=count)
+            embed.add_field(name='As an emote:', value=count_emote)
+            embed.add_field(name='As a reaction:', value=count_reaction)
+
         embed.set_thumbnail(url=f'https://cdn.discordapp.com/emojis/{emote.split(":")[2][:-1]}.png')
 
         await ctx.respond(embed=embed)
@@ -43,10 +49,21 @@ class Emotes(commands.Cog):
     async def on_message(self, message):
         if message.author == self.bot.user:
             return
+
         emotes = re.findall(r'<:\w*:\d*>', message.content)
+        animated_emotes = re.findall(r'<a:\w*:\d*>', message.content)
 
         for e in emotes:
-            increase_count(e, message.guild)
+            increase_count_emote(e, message.guild)
+        for e in animated_emotes:
+            increase_count_emote(e, message.guild)
+
+    @commands.Cog.listener()
+    async def on_raw_reaction_add(self, reaction):
+        if reaction.member == self.bot.user:
+            return
+
+        increase_count_reaction(str(reaction.emoji), reaction.member.guild)
 
 
 def setup(bot):
