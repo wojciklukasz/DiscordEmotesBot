@@ -49,9 +49,13 @@ class Emotes(commands.Cog):
     async def on_message(self, message):
         if message.author == self.bot.user:
             return
+
         emotes = re.findall(r'<:\w*:\d*>', message.content)
+        animated_emotes = re.findall(r'<a:\w*:\d*>', message.content)
 
         for e in emotes:
+            increase_count_emote(e, message.guild)
+        for e in animated_emotes:
             increase_count_emote(e, message.guild)
 
 
