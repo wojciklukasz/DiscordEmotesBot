@@ -64,4 +64,3 @@ jobs:
           app-name: 'DiscordEmotesBot'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_C8E32AD51F91475E8F0A700355DDE024 }}
-          startup-command: python3 src/bot.py
