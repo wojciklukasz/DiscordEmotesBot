@@ -1,11 +1,9 @@
 import os
 import discord
-from dotenv import load_dotenv
 from database.model import connect
 
 
 db = connect()
-load_dotenv()
 
 intents = discord.Intents.default()
 intents.message_content = True
