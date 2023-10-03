@@ -1,7 +1,7 @@
 import re
 import discord
 from discord.ext import commands
-from database.model import increase_count_emote, increase_count_reaction, get_count_emote, get_count_reaction, \
+from src.database.model import increase_count_emote, increase_count_reaction, get_count_emote, get_count_reaction, \
     decrease_count_emote, decrease_count_reaction
 
 
